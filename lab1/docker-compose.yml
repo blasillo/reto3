@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  helper:
+    image: btorregrosa/lab1-helper:latest
+    container_name: lab1-helper
+    hostname: helper
+    ports:
+      - "80:80" 
+      - "9000:9000" 
+    expose:
+      - "80"
+      - "9000"
+    extra_hosts:
+       - "tomcat:10.20.20.22"
+    networks:
+      attacker:
+        ipv4_address: 10.10.10.10
+      victim:
+        ipv4_address: 10.20.20.10
+
+
+  tomcat:
+    image: btorregrosa/lab1-tomcat:latest
+    container_name: lab1-tomcat
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    ports:
+     - "8000:8080"
+    networks:
+      victim:
+        ipv4_address: 10.20.20.20
+        
+networks:
+  attacker:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.10.10.0/24
+          gateway: 10.10.10.1
+
+  victim:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.20.20.0/24
+          gateway: 10.20.20.1
+

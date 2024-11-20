@@ -1,0 +1,56 @@
+# version: "3.8"
+services:
+  db:
+    container_name: mysql-db
+    image: btorregrosa/lab2-db:v1.0
+    ports:
+      - "127.0.0.1:3306:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_USER: library
+      MYSQL_PASSWORD: p@ssw0rd123
+      MYSQL_ROOT_PASSWORD: rootp@ssw0rd123
+    volumes:
+      - persistent:/var/lib/mysql
+    networks:
+      pentest-lab:
+        ipv4_address: 192.168.10.30
+    restart: always
+
+  bookstore:
+    container_name: bookstore
+    image: btorregrosa/lab2-bookstore:v1.0
+    ports:
+      - "80:80"
+    links:
+      - db
+    depends_on:
+      - db
+    networks:
+      pentest-lab:
+        ipv4_address: 192.168.10.20
+    restart: always
+
+  administrator:
+    container_name: administrator
+    image: btorregrosa/lab2-administrator:v1.0
+    ports:
+      - "8080:80"
+    links:
+      - db
+    depends_on:
+      - db
+    networks:
+      pentest-lab:
+        ipv4_address: 192.168.10.10
+    restart: always
+
+networks:
+  pentest-lab:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.10.0/24
+
+volumes:
+  persistent:

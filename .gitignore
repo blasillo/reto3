@@ -1,0 +1,5 @@
+# Ignorar archivos .tar
+*.tar
+
+# Ignorar archivos .old
+*.old
